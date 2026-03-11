@@ -154,8 +154,6 @@ if not validate_email(email):
     errors.append("Please enter a valid email address for the SILO request.")
 if planting_date is None:
     errors.append("Please select a planting date.")
-if preh_date is None:
-    errors.append("Please select a pre-harvest date.")
 if harv_date is None:
     errors.append("Please select a harvest date.")
 if planting_date and preh_date and preh_date < planting_date:
@@ -195,15 +193,19 @@ wx["gdd"] = calc_gdd(wx["mint"].values, wx["maxt"].values, tbase, tmax_cap)
 
 obs_last_day = wx["date"].max()
 
-obs_end_for_preh = min(preh_date, obs_last_day)
-mask_p2preh = (wx["date"] >= planting_date) & (wx["date"] <= obs_end_for_preh)
-obs_plant_to_preh = float(wx.loc[mask_p2preh, "gdd"].sum())
-
 obs_end_for_harv = min(obs_last_day, harv_date)
-obs_preh_to_lastobs = 0.0
-if obs_end_for_harv >= preh_date:
-    mask_preh2harv = (wx["date"] >= preh_date) & (wx["date"] <= obs_end_for_harv)
-    obs_preh_to_lastobs = float(wx.loc[mask_preh2harv, "gdd"].sum())
+mask_obs_all = (wx["date"] >= planting_date) & (wx["date"] <= obs_end_for_harv)
+obs_plant_to_harv = float(wx.loc[mask_obs_all, "gdd"].sum())
+
+if preh_date:
+    obs_end_for_preh = min(preh_date, obs_last_day)
+    mask_p2preh = (wx["date"] >= planting_date) & (wx["date"] <= obs_end_for_preh)
+    obs_plant_to_preh = float(wx.loc[mask_p2preh, "gdd"].sum())
+
+    obs_preh_to_lastobs = 0.0
+    if obs_end_for_harv >= preh_date:
+        mask_preh2harv = (wx["date"] >= preh_date) & (wx["date"] <= obs_end_for_harv)
+        obs_preh_to_lastobs = float(wx.loc[mask_preh2harv, "gdd"].sum())
 
 # ── Fetch Open-Meteo forecast ─────────────────────────────────────────────────
 fc_df = None
@@ -241,24 +243,28 @@ else:
     fc_warning = "Harvest date is before today — no forecast data was used."
 
 # ── Combine totals ────────────────────────────────────────────────────────────
-gdd_plant_to_preh = obs_plant_to_preh
-if fc_df is not None and not fc_df.empty and preh_date >= today:
-    mask_fc_preh = (fc_df["date"] >= today) & (fc_df["date"] <= preh_date)
-    gdd_plant_to_preh += float(fc_df.loc[mask_fc_preh, "gdd"].sum())
-
-gdd_preh_to_harv = obs_preh_to_lastobs + fc_gdd_total
-gdd_plant_to_harv = gdd_plant_to_preh + gdd_preh_to_harv
-
-days_plant_to_preh = (preh_date - planting_date).days
-days_preh_to_harv = (harv_date - preh_date).days
 days_plant_to_harv = (harv_date - planting_date).days
+
+if preh_date:
+    gdd_plant_to_preh = obs_plant_to_preh
+    if fc_df is not None and not fc_df.empty and preh_date >= today:
+        mask_fc_preh = (fc_df["date"] >= today) & (fc_df["date"] <= preh_date)
+        gdd_plant_to_preh += float(fc_df.loc[mask_fc_preh, "gdd"].sum())
+
+    gdd_preh_to_harv = obs_preh_to_lastobs + fc_gdd_total
+    gdd_plant_to_harv = gdd_plant_to_preh + gdd_preh_to_harv
+
+    days_plant_to_preh = (preh_date - planting_date).days
+    days_preh_to_harv = (harv_date - preh_date).days
+else:
+    gdd_plant_to_harv = obs_plant_to_harv + fc_gdd_total
 
 # ── Warnings ──────────────────────────────────────────────────────────────────
 if planting_date > obs_last_day:
     st.markdown(
         warn_box(
             f"Planting date ({planting_date}) is after the last SILO observed day "
-            f"({obs_last_day}). Observed GDD for Planting to Pre-harvest is 0."
+            f"({obs_last_day}). Observed GDD is 0."
         ),
         unsafe_allow_html=True,
     )
@@ -276,40 +282,60 @@ if heat_stress_on:
 # ── Metrics ───────────────────────────────────────────────────────────────────
 st.markdown('<div class="section-h">GDD Summary</div>', unsafe_allow_html=True)
 
-cols = st.columns(4 if heat_stress_on else 3)
-with cols[0]:
-    st.markdown(
-        metric_card(
-            "GDD — Planting to Pre-harvest",
-            f"{gdd_plant_to_preh:.1f}",
-            f"°C-days · {days_plant_to_preh} calendar days",
-        ),
-        unsafe_allow_html=True,
-    )
-with cols[1]:
-    st.markdown(
-        metric_card(
-            "GDD — Pre-harvest to Harvest",
-            f"{gdd_preh_to_harv:.1f}",
-            f"°C-days · {days_preh_to_harv} calendar days",
-        ),
-        unsafe_allow_html=True,
-    )
-with cols[2]:
-    st.markdown(
-        metric_card(
-            "GDD — Planting to Harvest",
-            f"{gdd_plant_to_harv:.1f}",
-            f"°C-days · {days_plant_to_harv} calendar days",
-        ),
-        unsafe_allow_html=True,
-    )
-if heat_stress_on:
-    with cols[3]:
+if preh_date:
+    n_cols = 4 if heat_stress_on else 3
+    cols = st.columns(n_cols)
+    with cols[0]:
         st.markdown(
-            metric_card("Heat Stress Days", str(heat_stress_days), heat_stress_sub),
+            metric_card(
+                "GDD — Planting to Pre-harvest",
+                f"{gdd_plant_to_preh:.1f}",
+                f"°C-days · {days_plant_to_preh} calendar days",
+            ),
             unsafe_allow_html=True,
         )
+    with cols[1]:
+        st.markdown(
+            metric_card(
+                "GDD — Pre-harvest to Harvest",
+                f"{gdd_preh_to_harv:.1f}",
+                f"°C-days · {days_preh_to_harv} calendar days",
+            ),
+            unsafe_allow_html=True,
+        )
+    with cols[2]:
+        st.markdown(
+            metric_card(
+                "GDD — Planting to Harvest",
+                f"{gdd_plant_to_harv:.1f}",
+                f"°C-days · {days_plant_to_harv} calendar days",
+            ),
+            unsafe_allow_html=True,
+        )
+    if heat_stress_on:
+        with cols[3]:
+            st.markdown(
+                metric_card("Heat Stress Days", str(heat_stress_days), heat_stress_sub),
+                unsafe_allow_html=True,
+            )
+else:
+    n_cols = 2 if heat_stress_on else 1
+    cols = st.columns(n_cols)
+    with cols[0]:
+        st.markdown(
+            metric_card(
+                "GDD — Planting to Harvest",
+                f"{gdd_plant_to_harv:.1f}",
+                f"°C-days · {days_plant_to_harv} calendar days",
+            ),
+            unsafe_allow_html=True,
+        )
+    if heat_stress_on:
+        with cols[1]:
+            st.markdown(
+                metric_card("Heat Stress Days", str(heat_stress_days), heat_stress_sub),
+                unsafe_allow_html=True,
+            )
 
 # ── Run details ───────────────────────────────────────────────────────────────
 with st.expander("Run details"):
@@ -325,7 +351,7 @@ with st.expander("Run details"):
 | SILO observed last day | {obs_last_day} |
 | Today (Brisbane) | {today} |
 | Planting date | {planting_date} |
-| Pre-harvest date | {preh_date} |
+| Pre-harvest date | {preh_date if preh_date else "—"} |
 | Harvest date | {harv_date} |
 """
     )
@@ -425,7 +451,8 @@ def vline(
 # Labels at alternating heights so they never overlap even when dates are close.
 # Planted=top-left, Pre-harvest=bottom-right, Today=bottom-left, Harvest=top-right.
 vline(fig, planting_date, "Planted",     "#1b5e20", "dot",  label_y=0.95, label_xanchor="left")
-vline(fig, preh_date,     "Pre-harvest", "#6a1b9a", "dash", label_y=0.05, label_xanchor="right")
+if preh_date:
+    vline(fig, preh_date, "Pre-harvest", "#6a1b9a", "dash", label_y=0.05, label_xanchor="right")
 if today <= harv_date:
     vline(fig, today,     "Today",       "#1565c0", "dash", label_y=0.05, label_xanchor="left")
 vline(fig, harv_date,     "Harvest",     "#b71c1c", "dash", label_y=0.95, label_xanchor="right")
