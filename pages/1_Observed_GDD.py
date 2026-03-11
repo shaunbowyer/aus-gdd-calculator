@@ -296,10 +296,20 @@ for col in ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days
     display_df[col] = display_df[col].round(2)
 display_df["Date"] = display_df["Date"].astype(str)
 
+
+def style_tmax(df):
+    if heat_stress_on:
+        return df.style.map(
+            lambda v: "background-color: #ffcccc;" if v > heat_stress_temp else "",
+            subset=["Max Temp (°C)"],
+        )
+    return df.style
+
+
 st.markdown(f"**Last 20 days** of {len(display_df)} total days observed:")
-st.dataframe(display_df.tail(20), use_container_width=True, hide_index=True)
+st.dataframe(style_tmax(display_df.tail(20)), use_container_width=True, hide_index=True)
 
 with st.expander(f"Show all {len(display_df)} days"):
-    st.dataframe(display_df, use_container_width=True, hide_index=True)
+    st.dataframe(style_tmax(display_df), use_container_width=True, hide_index=True)
 
 st.markdown(FOOTER_HTML, unsafe_allow_html=True)

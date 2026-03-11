@@ -100,7 +100,7 @@ st.markdown(
     </div>
   </a>
 
-  <a class="card-link" href="/Observed_Forecasted_GDD" target="_top">
+  <a class="card-link" href="/Observed_+_Forecasted_GDD" target="_top">
     <div class="tool-card">
       <h3>Observed + Forecasted GDD</h3>
       <p>Project GDD through to harvest by combining SILO historical observations

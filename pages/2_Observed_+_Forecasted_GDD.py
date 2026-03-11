@@ -494,11 +494,21 @@ for col in ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days
     obs_display[col] = obs_display[col].round(2)
 obs_display["Date"] = obs_display["Date"].astype(str)
 
+
+def style_tmax(df):
+    if heat_stress_on:
+        return df.style.map(
+            lambda v: "background-color: #ffcccc;" if v > heat_stress_temp else "",
+            subset=["Max Temp (°C)"],
+        )
+    return df.style
+
+
 st.markdown(f"**Last 20 days** of {len(obs_display)} total observed days:")
-st.dataframe(obs_display.tail(20), use_container_width=True, hide_index=True)
+st.dataframe(style_tmax(obs_display.tail(20)), use_container_width=True, hide_index=True)
 
 with st.expander(f"Show all {len(obs_display)} observed days"):
-    st.dataframe(obs_display, use_container_width=True, hide_index=True)
+    st.dataframe(style_tmax(obs_display), use_container_width=True, hide_index=True)
 
 # ── Forecast table ────────────────────────────────────────────────────────────
 st.markdown('<div class="section-h">Forecast Data (Open-Meteo)</div>', unsafe_allow_html=True)
@@ -523,6 +533,6 @@ else:
     for col in ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days)"]:
         fc_display[col] = fc_display[col].round(2)
     fc_display["Date"] = fc_display["Date"].astype(str)
-    st.dataframe(fc_display, use_container_width=True, hide_index=True)
+    st.dataframe(style_tmax(fc_display), use_container_width=True, hide_index=True)
 
 st.markdown(FOOTER_HTML, unsafe_allow_html=True)
