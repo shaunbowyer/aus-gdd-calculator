@@ -359,14 +359,16 @@ def vline(
     label: str,
     color: str,
     dash: str = "dash",
+    label_y: float = 0.95,
+    label_xanchor: str = "left",
 ) -> None:
-    """Draw a vertical line + label below the x-axis using add_shape/add_annotation.
+    """Draw a vertical line + label using add_shape/add_annotation.
 
     Using add_shape avoids the add_vline internal arithmetic that causes
     date-axis offset errors. ISO date strings are accepted directly by both
     add_shape and add_annotation, so every line lands exactly on its date.
-    Labels are placed at a fixed position just below the x-axis and rotated
-    so they don't overlap even when dates are close together.
+    Labels are placed at alternating heights (paper coords 0–1) so they
+    never overlap regardless of how close dates are to each other.
     """
     x_str = str(x_date)
     fig.add_shape(
@@ -379,23 +381,27 @@ def vline(
     fig.add_annotation(
         x=x_str,
         xref="x",
-        y=-0.07,
+        y=label_y,
         yref="paper",
         text=f"<b>{label}</b>",
         showarrow=False,
-        xanchor="center",
-        yanchor="top",
-        textangle=-45,
-        font=dict(size=11, color=color),
+        xanchor=label_xanchor,
+        yanchor="bottom",
+        font=dict(size=12, color=color),
+        bgcolor="rgba(255,255,255,0.85)",
+        bordercolor=color,
+        borderwidth=1,
+        borderpad=4,
     )
 
 
-# All labels sit at the same y position just below the x-axis, rotated to avoid overlap.
-vline(fig, planting_date, "Planted",     "#1b5e20", "dot")
-vline(fig, preh_date,     "Pre-harvest", "#6a1b9a", "dash")
+# Labels at alternating heights so they never overlap even when dates are close.
+# Planted=top-left, Pre-harvest=mid-left, Today=low-left, Harvest=top-right.
+vline(fig, planting_date, "Planted",     "#1b5e20", "dot",  label_y=0.95, label_xanchor="left")
+vline(fig, preh_date,     "Pre-harvest", "#6a1b9a", "dash", label_y=0.58, label_xanchor="left")
 if today <= harv_date:
-    vline(fig, today,     "Today",       "#1565c0", "dash")
-vline(fig, harv_date,     "Harvest",     "#b71c1c", "dash")
+    vline(fig, today,     "Today",       "#1565c0", "dash", label_y=0.22, label_xanchor="left")
+vline(fig, harv_date,     "Harvest",     "#b71c1c", "dash", label_y=0.95, label_xanchor="right")
 
 fig.update_layout(
     xaxis_title="Date",
@@ -404,7 +410,7 @@ fig.update_layout(
     paper_bgcolor="white",
     hovermode="closest",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
-    margin=dict(l=0, r=0, t=50, b=80),
+    margin=dict(l=0, r=0, t=50, b=20),
     height=440,
 )
 fig.update_xaxes(
