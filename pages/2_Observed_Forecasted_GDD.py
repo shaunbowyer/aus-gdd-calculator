@@ -396,11 +396,11 @@ def vline(
 
 
 # Labels at alternating heights so they never overlap even when dates are close.
-# Planted=top-left, Pre-harvest=mid-left, Today=low-left, Harvest=top-right.
+# Planted=top-left, Pre-harvest=bottom-right, Today=bottom-left, Harvest=top-right.
 vline(fig, planting_date, "Planted",     "#1b5e20", "dot",  label_y=0.95, label_xanchor="left")
-vline(fig, preh_date,     "Pre-harvest", "#6a1b9a", "dash", label_y=0.58, label_xanchor="left")
+vline(fig, preh_date,     "Pre-harvest", "#6a1b9a", "dash", label_y=0.05, label_xanchor="right")
 if today <= harv_date:
-    vline(fig, today,     "Today",       "#1565c0", "dash", label_y=0.22, label_xanchor="left")
+    vline(fig, today,     "Today",       "#1565c0", "dash", label_y=0.05, label_xanchor="left")
 vline(fig, harv_date,     "Harvest",     "#b71c1c", "dash", label_y=0.95, label_xanchor="right")
 
 fig.update_layout(
