@@ -25,18 +25,6 @@ st.markdown(
 .hero h1 { margin: 0; font-size: 2.4rem; font-weight: 800; }
 .hero p  { margin: 0.5rem 0 0; font-size: 1.05rem; opacity: 0.88; }
 
-.card-link {
-    display: block;
-    text-decoration: none !important;
-    color: inherit !important;
-    flex: 1;
-}
-.card-link:hover .tool-card {
-    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
-    border-color: #2e7d32;
-    transform: translateY(-2px);
-}
-
 .tool-card {
     background: white;
     border: 2px solid #e0e0e0;
@@ -46,6 +34,11 @@ st.markdown(
     height: 100%;
     transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
     cursor: pointer;
+}
+.tool-card:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+    border-color: #2e7d32;
+    transform: translateY(-2px);
 }
 .tool-card h3 { color: #2e7d32; margin-top: 0; font-size: 1.2rem; }
 .tool-card p  { color: #555; font-size: 0.93rem; line-height: 1.55; }
@@ -84,37 +77,33 @@ st.markdown(
     """
 <div style="display:flex; gap:2rem; margin-bottom:2rem;">
 
-  <a class="card-link" href="/Observed_GDD" target="_top">
-    <div class="tool-card">
-      <h3>Observed GDD</h3>
-      <p>Calculate Growing Degree Days accumulated from your planting date using
-      historical SILO weather observations.</p>
-      <span class="badge">SILO DataDrill</span>
-      <span class="badge">Historical</span>
-      <ul>
-        <li>Observed daily min &amp; max temperatures</li>
-        <li>Customisable T<sub>base</sub> and T<sub>max</sub> cap</li>
-        <li>Preset Queensland locations + custom coordinates</li>
-        <li>Cumulative GDD chart &amp; daily data table</li>
-      </ul>
-    </div>
-  </a>
+  <div class="tool-card" onclick="window.top.location.href='/Observed_GDD'" style="cursor:pointer;">
+    <h3>Observed GDD</h3>
+    <p>Calculate Growing Degree Days accumulated from your planting date using
+    historical SILO weather observations.</p>
+    <span class="badge">SILO DataDrill</span>
+    <span class="badge">Historical</span>
+    <ul>
+      <li>Observed daily min &amp; max temperatures</li>
+      <li>Customisable T<sub>base</sub> and T<sub>max</sub> cap</li>
+      <li>Preset Queensland locations + custom coordinates</li>
+      <li>Cumulative GDD chart &amp; daily data table</li>
+    </ul>
+  </div>
 
-  <a class="card-link" href="/Observed_+_Forecasted_GDD" target="_top">
-    <div class="tool-card">
-      <h3>Observed + Forecasted GDD</h3>
-      <p>Project GDD through to harvest by combining SILO historical observations
-      with the Open-Meteo 16-day temperature forecast.</p>
-      <span class="badge">SILO DataDrill</span>
-      <span class="badge">Open-Meteo Forecast</span>
-      <ul>
-        <li>SILO observed up to yesterday (Brisbane time)</li>
-        <li>Open-Meteo 16-day daily forecast from today</li>
-        <li>GDD segments: Planting → Pre-harvest → Harvest</li>
-        <li>Forecast cutoff warning if harvest is beyond 16 days</li>
-      </ul>
-    </div>
-  </a>
+  <div class="tool-card" onclick="window.top.location.href='/Observed_+_Forecasted_GDD'" style="cursor:pointer;">
+    <h3>Observed + Forecasted GDD</h3>
+    <p>Project GDD through to harvest by combining SILO historical observations
+    with the Open-Meteo 16-day temperature forecast.</p>
+    <span class="badge">SILO DataDrill</span>
+    <span class="badge">Open-Meteo Forecast</span>
+    <ul>
+      <li>SILO observed up to yesterday (Brisbane time)</li>
+      <li>Open-Meteo 16-day daily forecast from today</li>
+      <li>GDD segments: Planting → Pre-harvest → Harvest</li>
+      <li>Forecast cutoff warning if harvest is beyond 16 days</li>
+    </ul>
+  </div>
 
 </div>
 """,

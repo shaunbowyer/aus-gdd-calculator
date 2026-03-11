@@ -491,7 +491,7 @@ obs_display = (
     })
 )
 for col in ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days)"]:
-    obs_display[col] = obs_display[col].round(2)
+    obs_display[col] = obs_display[col].round(1)
 obs_display["Date"] = obs_display["Date"].astype(str)
 
 
@@ -531,7 +531,7 @@ else:
         })
     )
     for col in ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days)"]:
-        fc_display[col] = fc_display[col].round(2)
+        fc_display[col] = fc_display[col].round(1)
     fc_display["Date"] = fc_display["Date"].astype(str)
     st.dataframe(style_tmax(fc_display), use_container_width=True, hide_index=True)
 

@@ -293,7 +293,7 @@ display_df = (
     })
 )
 for col in ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days)", "Cumulative GDD"]:
-    display_df[col] = display_df[col].round(2)
+    display_df[col] = display_df[col].round(1)
 display_df["Date"] = display_df["Date"].astype(str)
 
 
