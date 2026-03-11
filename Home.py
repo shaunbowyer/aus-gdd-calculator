@@ -27,8 +27,8 @@ st.markdown(
 
 .card-link {
     display: block;
-    text-decoration: none;
-    color: inherit;
+    text-decoration: none !important;
+    color: inherit !important;
     flex: 1;
 }
 .card-link:hover .tool-card {
@@ -84,7 +84,7 @@ st.markdown(
     """
 <div style="display:flex; gap:2rem; margin-bottom:2rem;">
 
-  <a class="card-link" href="/Observed_GDD">
+  <a class="card-link" href="/Observed_GDD" target="_top">
     <div class="tool-card">
       <h3>Observed GDD</h3>
       <p>Calculate Growing Degree Days accumulated from your planting date using
@@ -100,7 +100,7 @@ st.markdown(
     </div>
   </a>
 
-  <a class="card-link" href="/Observed_Forecasted_GDD">
+  <a class="card-link" href="/Observed_Forecasted_GDD" target="_top">
     <div class="tool-card">
       <h3>Observed + Forecasted GDD</h3>
       <p>Project GDD through to harvest by combining SILO historical observations

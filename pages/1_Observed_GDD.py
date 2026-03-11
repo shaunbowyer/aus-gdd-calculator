@@ -53,7 +53,7 @@ with st.sidebar:
     # Interactive map — ESRI World Imagery (satellite)
     m = folium.Map(
         location=[lat, lon],
-        zoom_start=15,
+        zoom_start=13,
         tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         attr="Esri World Imagery",
     )
