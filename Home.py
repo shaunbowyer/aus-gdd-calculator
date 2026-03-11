@@ -47,27 +47,13 @@ div[data-testid="stHorizontalBlock"] .stMarkdown {
     flex-direction: column;
 }
 
-/* Transparent full-area button overlay for card click */
-div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] {
+/* st.page_link overlay — covers entire card, no underline, no colour */
+div[data-testid="stHorizontalBlock"] a[data-testid="stPageLink-NavLink"] {
     position: absolute;
     inset: 0;
     z-index: 10;
-}
-div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] > button {
-    width: 100%;
-    height: 100%;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
+    opacity: 0;
     cursor: pointer;
-}
-div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] > button:hover,
-div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] > button:focus {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
 }
 
 .tool-card {
@@ -139,8 +125,7 @@ with col1:
 """,
         unsafe_allow_html=True,
     )
-    if st.button("", key="btn_observed", use_container_width=True):
-        st.switch_page("pages/1_Observed_GDD.py")
+    st.page_link("pages/1_Observed_GDD.py", label=" ", use_container_width=True)
 
 with col2:
     st.markdown(
@@ -161,8 +146,7 @@ with col2:
 """,
         unsafe_allow_html=True,
     )
-    if st.button("", key="btn_forecasted", use_container_width=True):
-        st.switch_page("pages/2_Observed_Forecasted_GDD.py")
+    st.page_link("pages/2_Observed_Forecasted_GDD.py", label=" ", use_container_width=True)
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.info("Select a tool from the sidebar to get started.")
