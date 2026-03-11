@@ -118,6 +118,20 @@ with st.sidebar:
         key="fc_tmax",
     )
 
+    st.divider()
+
+    heat_stress_on = st.checkbox("Count heat stress days", value=False, key="fc_hs_on")
+    heat_stress_temp = st.number_input(
+        "Heat stress threshold (°C)",
+        value=35.0,
+        min_value=20.0,
+        max_value=55.0,
+        step=0.5,
+        key="fc_hs_temp",
+        disabled=not heat_stress_on,
+        help="Count days where Tmax exceeds this temperature.",
+    )
+
     run = st.button("Calculate GDD", type="primary", use_container_width=True)
 
     st.divider()
@@ -252,11 +266,18 @@ if planting_date > obs_last_day:
 if fc_warning:
     st.markdown(warn_box(fc_warning), unsafe_allow_html=True)
 
+# ── Heat stress ───────────────────────────────────────────────────────────────
+if heat_stress_on:
+    obs_hs = int((wx["maxt"] > heat_stress_temp).sum())
+    fc_hs = int((fc_df["tmax"] > heat_stress_temp).sum()) if fc_df is not None and not fc_df.empty else 0
+    heat_stress_days = obs_hs + fc_hs
+    heat_stress_sub = f"days with Tmax > {heat_stress_temp}°C · {obs_hs} obs + {fc_hs} forecast"
+
 # ── Metrics ───────────────────────────────────────────────────────────────────
 st.markdown('<div class="section-h">GDD Summary</div>', unsafe_allow_html=True)
 
-c1, c2, c3 = st.columns(3)
-with c1:
+cols = st.columns(4 if heat_stress_on else 3)
+with cols[0]:
     st.markdown(
         metric_card(
             "GDD — Planting to Pre-harvest",
@@ -265,7 +286,7 @@ with c1:
         ),
         unsafe_allow_html=True,
     )
-with c2:
+with cols[1]:
     st.markdown(
         metric_card(
             "GDD — Pre-harvest to Harvest",
@@ -274,7 +295,7 @@ with c2:
         ),
         unsafe_allow_html=True,
     )
-with c3:
+with cols[2]:
     st.markdown(
         metric_card(
             "GDD — Planting to Harvest",
@@ -283,6 +304,12 @@ with c3:
         ),
         unsafe_allow_html=True,
     )
+if heat_stress_on:
+    with cols[3]:
+        st.markdown(
+            metric_card("Heat Stress Days", str(heat_stress_days), heat_stress_sub),
+            unsafe_allow_html=True,
+        )
 
 # ── Run details ───────────────────────────────────────────────────────────────
 with st.expander("Run details"):

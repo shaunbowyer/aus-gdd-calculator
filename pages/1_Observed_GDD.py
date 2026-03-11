@@ -114,6 +114,20 @@ with st.sidebar:
         key="obs_tmax",
     )
 
+    st.divider()
+
+    heat_stress_on = st.checkbox("Count heat stress days", value=False, key="obs_hs_on")
+    heat_stress_temp = st.number_input(
+        "Heat stress threshold (°C)",
+        value=35.0,
+        min_value=20.0,
+        max_value=55.0,
+        step=0.5,
+        key="obs_hs_temp",
+        disabled=not heat_stress_on,
+        help="Count days where Tmax exceeds this temperature.",
+    )
+
     run = st.button("Calculate GDD", type="primary", use_container_width=True)
 
     st.divider()
@@ -175,25 +189,38 @@ total_gdd = float(wx["gdd"].sum())
 calendar_days = (obs_last_day - planting_date).days + 1
 avg_daily = total_gdd / max(len(wx), 1)
 
+# ── Heat stress ───────────────────────────────────────────────────────────────
+heat_stress_days = int((wx["maxt"] > heat_stress_temp).sum()) if heat_stress_on else None
+
 # ── Metrics ───────────────────────────────────────────────────────────────────
 st.markdown('<div class="section-h">Summary</div>', unsafe_allow_html=True)
 
-c1, c2, c3 = st.columns(3)
-with c1:
+cols = st.columns(4 if heat_stress_on else 3)
+with cols[0]:
     st.markdown(
         metric_card("Total GDD", f"{total_gdd:.1f}", f"°C-days · Tbase {tbase}°C · cap {tmax_cap}°C"),
         unsafe_allow_html=True,
     )
-with c2:
+with cols[1]:
     st.markdown(
         metric_card("Calendar Days", str(calendar_days), f"{planting_date} to {obs_last_day}"),
         unsafe_allow_html=True,
     )
-with c3:
+with cols[2]:
     st.markdown(
         metric_card("Avg GDD / Day", f"{avg_daily:.1f}", f"°C-days · last obs: {obs_last_day}"),
         unsafe_allow_html=True,
     )
+if heat_stress_on:
+    with cols[3]:
+        st.markdown(
+            metric_card(
+                "Heat Stress Days",
+                str(heat_stress_days),
+                f"days with Tmax > {heat_stress_temp}°C",
+            ),
+            unsafe_allow_html=True,
+        )
 
 # ── Cumulative GDD chart ──────────────────────────────────────────────────────
 st.markdown('<div class="section-h">Cumulative GDD Over Time</div>', unsafe_allow_html=True)
