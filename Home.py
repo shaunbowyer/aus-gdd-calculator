@@ -4,6 +4,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Agronomy Tools",
+    page_icon="🌳",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -24,36 +25,16 @@ st.markdown(
 .hero h1 { margin: 0; font-size: 2.4rem; font-weight: 800; }
 .hero p  { margin: 0.5rem 0 0; font-size: 1.05rem; opacity: 0.88; }
 
-/* Equal-height columns — cascade through every Streamlit wrapper div */
-div[data-testid="stHorizontalBlock"] {
-    display: flex;
-    align-items: stretch;
-    margin-bottom: 2rem;
-}
-div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-    display: flex;
-    flex-direction: column;
+.card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
     flex: 1;
 }
-div[data-testid="stHorizontalBlock"] > div[data-testid="column"] > div[data-testid="stVerticalBlock"] {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    position: relative; /* anchor for the button overlay */
-}
-div[data-testid="stHorizontalBlock"] .stMarkdown {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* st.page_link overlay — covers entire card, no underline, no colour */
-div[data-testid="stHorizontalBlock"] a[data-testid="stPageLink-NavLink"] {
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    opacity: 0;
-    cursor: pointer;
+.card-link:hover .tool-card {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+    border-color: #2e7d32;
+    transform: translateY(-2px);
 }
 
 .tool-card {
@@ -62,14 +43,9 @@ div[data-testid="stHorizontalBlock"] a[data-testid="stPageLink-NavLink"] {
     border-radius: 12px;
     padding: 1.6rem 1.8rem;
     box-shadow: 0 3px 12px rgba(0,0,0,0.07);
-    flex: 1;
+    height: 100%;
     transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
-}
-/* Hover triggered on the column block (button intercepts the mouse) */
-div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"]:hover .tool-card {
-    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
-    border-color: #2e7d32;
-    transform: translateY(-2px);
+    cursor: pointer;
 }
 .tool-card h3 { color: #2e7d32; margin-top: 0; font-size: 1.2rem; }
 .tool-card p  { color: #555; font-size: 0.93rem; line-height: 1.55; }
@@ -104,49 +80,46 @@ st.markdown(
 )
 
 # ── Tool cards ────────────────────────────────────────────────────────────────
-col1, col2 = st.columns(2, gap="large")
+st.markdown(
+    """
+<div style="display:flex; gap:2rem; margin-bottom:2rem;">
 
-with col1:
-    st.markdown(
-        """
-<div class="tool-card">
-    <h3>Observed GDD</h3>
-    <p>Calculate Growing Degree Days accumulated from your planting date using
-    historical SILO weather observations.</p>
-    <span class="badge">SILO DataDrill</span>
-    <span class="badge">Historical</span>
-    <ul>
+  <a class="card-link" href="/Observed_GDD">
+    <div class="tool-card">
+      <h3>Observed GDD</h3>
+      <p>Calculate Growing Degree Days accumulated from your planting date using
+      historical SILO weather observations.</p>
+      <span class="badge">SILO DataDrill</span>
+      <span class="badge">Historical</span>
+      <ul>
         <li>Observed daily min &amp; max temperatures</li>
         <li>Customisable T<sub>base</sub> and T<sub>max</sub> cap</li>
         <li>Preset Queensland locations + custom coordinates</li>
         <li>Cumulative GDD chart &amp; daily data table</li>
-    </ul>
-</div>
-""",
-        unsafe_allow_html=True,
-    )
-    st.page_link("pages/1_Observed_GDD.py", label=" ", use_container_width=True)
+      </ul>
+    </div>
+  </a>
 
-with col2:
-    st.markdown(
-        """
-<div class="tool-card">
-    <h3>Observed + Forecasted GDD</h3>
-    <p>Project GDD through to harvest by combining SILO historical observations
-    with the Open-Meteo 16-day temperature forecast.</p>
-    <span class="badge">SILO DataDrill</span>
-    <span class="badge">Open-Meteo Forecast</span>
-    <ul>
+  <a class="card-link" href="/Observed_Forecasted_GDD">
+    <div class="tool-card">
+      <h3>Observed + Forecasted GDD</h3>
+      <p>Project GDD through to harvest by combining SILO historical observations
+      with the Open-Meteo 16-day temperature forecast.</p>
+      <span class="badge">SILO DataDrill</span>
+      <span class="badge">Open-Meteo Forecast</span>
+      <ul>
         <li>SILO observed up to yesterday (Brisbane time)</li>
         <li>Open-Meteo 16-day daily forecast from today</li>
         <li>GDD segments: Planting → Pre-harvest → Harvest</li>
         <li>Forecast cutoff warning if harvest is beyond 16 days</li>
-    </ul>
+      </ul>
+    </div>
+  </a>
+
 </div>
 """,
-        unsafe_allow_html=True,
-    )
-    st.page_link("pages/2_Observed_Forecasted_GDD.py", label=" ", use_container_width=True)
+    unsafe_allow_html=True,
+)
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.info("Select a tool from the sidebar to get started.")
