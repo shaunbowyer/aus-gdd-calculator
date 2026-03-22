@@ -92,11 +92,6 @@ st.markdown(
 }
 
 /* ── Tool cards ── */
-.cards-row {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
 .tool-card {
     background: white;
     border: 1px solid #e2e8f0;
@@ -122,6 +117,7 @@ st.markdown(
     border-color: #86efac;
     transform: translateY(-3px);
 }
+
 .card-icon {
     width: 44px; height: 44px;
     background: #f0fdf4;
@@ -211,59 +207,68 @@ st.markdown(
 )
 
 # ── Tool cards ────────────────────────────────────────────────────────────────
-st.markdown(
-    """
-<div class="cards-row">
+col1, col2 = st.columns(2)
 
-  <div class="tool-card" onclick="window.top.location.href='/Observed_GDD'">
-    <div class="card-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
-      </svg>
-    </div>
-    <h3>Observed GDD</h3>
-    <div class="badges">
-      <span class="badge">SILO DataDrill</span>
-      <span class="badge">Historical</span>
-    </div>
-    <p>Calculate Growing Degree Days accumulated from your planting date using
-    historical SILO weather observations.</p>
-    <ul>
-      <li>Observed daily min &amp; max temperatures</li>
-      <li>Customisable T<sub>base</sub> and T<sub>max</sub> cap</li>
-      <li>Preset Queensland locations + custom coordinates</li>
-      <li>Cumulative GDD chart &amp; daily data table</li>
-      <li>Optional heat stress day counter</li>
-    </ul>
+with col1:
+    st.markdown(
+        """
+<div class="tool-card">
+  <div class="card-icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166634" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+    </svg>
   </div>
-
-  <div class="tool-card" onclick="window.top.location.href='/Observed_+_Forecasted_GDD'">
-    <div class="card-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
-        <path d="m16 14 3-3" stroke-dasharray="3 2"/>
-      </svg>
-    </div>
-    <h3>Observed + Forecasted GDD</h3>
-    <div class="badges">
-      <span class="badge">SILO DataDrill</span>
-      <span class="badge">Open-Meteo Forecast</span>
-    </div>
-    <p>Project GDD through to harvest by combining SILO historical observations
-    with the Open-Meteo 16-day temperature forecast.</p>
-    <ul>
-      <li>SILO observed up to yesterday (Brisbane time)</li>
-      <li>Open-Meteo 16-day daily forecast from today</li>
-      <li>GDD segments: Planting &rarr; Pre-harvest &rarr; Harvest</li>
-      <li>Forecast cutoff warning if harvest is beyond 16 days</li>
-      <li>Optional heat stress day counter</li>
-    </ul>
+  <h3>Observed GDD</h3>
+  <div class="badges">
+    <span class="badge">SILO DataDrill</span>
+    <span class="badge">Historical</span>
   </div>
-
+  <p>Calculate Growing Degree Days accumulated from your planting date using
+  historical SILO weather observations.</p>
+  <ul>
+    <li>Observed daily min &amp; max temperatures</li>
+    <li>Customisable T<sub>base</sub> and T<sub>max</sub> cap</li>
+    <li>Preset Queensland locations + custom coordinates</li>
+    <li>Cumulative GDD chart &amp; daily data table</li>
+    <li>Optional heat stress day counter</li>
+  </ul>
 </div>
 """,
-    unsafe_allow_html=True,
-)
+        unsafe_allow_html=True,
+    )
+    if st.button("Open Observed GDD", key="btn_obs", type="primary", use_container_width=True):
+        st.switch_page("pages/1_Observed_GDD.py")
+
+with col2:
+    st.markdown(
+        """
+<div class="tool-card">
+  <div class="card-icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166634" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+      <path d="m16 14 3-3" stroke-dasharray="3 2"/>
+    </svg>
+  </div>
+  <h3>Observed + Forecasted GDD</h3>
+  <div class="badges">
+    <span class="badge">SILO DataDrill</span>
+    <span class="badge">Open-Meteo Forecast</span>
+  </div>
+  <p>Project GDD through to harvest by combining SILO historical observations
+  with the Open-Meteo 16-day temperature forecast.</p>
+  <ul>
+    <li>SILO observed up to yesterday (Brisbane time)</li>
+    <li>Open-Meteo 16-day daily forecast from today</li>
+    <li>GDD segments: Planting &rarr; Pre-harvest &rarr; Harvest</li>
+    <li>Forecast cutoff warning if harvest is beyond 16 days</li>
+    <li>Optional heat stress day counter</li>
+  </ul>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+    if st.button("Open Observed + Forecasted GDD", key="btn_fc", type="primary", use_container_width=True):
+        st.switch_page("pages/2_Observed_+_Forecasted_GDD.py")
 
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown(
