@@ -234,24 +234,25 @@ fig.add_trace(
         y=wx["cumulative_gdd"].round(1),
         name="Cumulative GDD",
         mode="lines",
-        line=dict(color="#2e7d32", width=2.5),
+        line=dict(color="#166534", width=2.5),
         fill="tozeroy",
-        fillcolor="rgba(46,125,50,0.10)",
+        fillcolor="rgba(22,101,52,0.08)",
         hovertemplate="<b>%{x}</b><br>Cumulative GDD: %{y:.1f} °C-days<extra></extra>",
     )
 )
 fig.update_layout(
     xaxis_title="Date",
     yaxis_title="Cumulative GDD (°C-days)",
-    plot_bgcolor="white",
+    plot_bgcolor="#fafafa",
     paper_bgcolor="white",
     hovermode="x unified",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     margin=dict(l=0, r=0, t=10, b=0),
     height=380,
+    font=dict(family="Roboto Mono, monospace", size=12, color="#475569"),
 )
-fig.update_xaxes(showgrid=True, gridcolor="#f0f0f0")
-fig.update_yaxes(showgrid=True, gridcolor="#f0f0f0")
+fig.update_xaxes(showgrid=True, gridcolor="#e2e8f0", linecolor="#e2e8f0")
+fig.update_yaxes(showgrid=True, gridcolor="#e2e8f0", linecolor="#e2e8f0")
 st.plotly_chart(fig, use_container_width=True)
 
 # ── Daily GDD bar chart ───────────────────────────────────────────────────────
@@ -260,7 +261,9 @@ with st.expander("Daily GDD bar chart"):
         go.Bar(
             x=x_dates,
             y=wx["gdd"].round(1),
-            marker_color="#4caf50",
+            marker_color="#4ade80",
+            marker_line_color="#166534",
+            marker_line_width=0.5,
             name="Daily GDD",
             hovertemplate="<b>%{x}</b><br>Daily GDD: %{y:.1f} °C-days<extra></extra>",
         )
@@ -268,13 +271,14 @@ with st.expander("Daily GDD bar chart"):
     fig2.update_layout(
         xaxis_title="Date",
         yaxis_title="Daily GDD (°C-days)",
-        plot_bgcolor="white",
+        plot_bgcolor="#fafafa",
         paper_bgcolor="white",
         margin=dict(l=0, r=0, t=10, b=0),
         height=300,
+        font=dict(family="Roboto Mono, monospace", size=12, color="#475569"),
     )
-    fig2.update_xaxes(showgrid=True, gridcolor="#f0f0f0")
-    fig2.update_yaxes(showgrid=True, gridcolor="#f0f0f0")
+    fig2.update_xaxes(showgrid=True, gridcolor="#e2e8f0", linecolor="#e2e8f0")
+    fig2.update_yaxes(showgrid=True, gridcolor="#e2e8f0", linecolor="#e2e8f0")
     st.plotly_chart(fig2, use_container_width=True)
 
 # ── Data table ────────────────────────────────────────────────────────────────
@@ -295,19 +299,25 @@ display_df = (
 for col in ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days)", "Cumulative GDD"]:
     display_df[col] = display_df[col].round(1)
 display_df["Date"] = display_df["Date"].astype(str)
+display_df = display_df.iloc[::-1].reset_index(drop=True)
+
+
+_NUM_COLS = ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days)", "Cumulative GDD"]
+_FMT = {col: "{:.1f}" for col in _NUM_COLS}
 
 
 def style_tmax(df):
+    s = df.style.format(_FMT)
     if heat_stress_on:
-        return df.style.map(
-            lambda v: "background-color: #ffcccc;" if v > heat_stress_temp else "",
+        s = s.map(
+            lambda v: "background-color: #ffcccc;" if isinstance(v, (int, float)) and v > heat_stress_temp else "",
             subset=["Max Temp (°C)"],
         )
-    return df.style
+    return s
 
 
-st.markdown(f"**Last 20 days** of {len(display_df)} total days observed:")
-st.dataframe(style_tmax(display_df.tail(20)), use_container_width=True, hide_index=True)
+st.markdown(f"**Most recent 20 days** of {len(display_df)} total days observed:")
+st.dataframe(style_tmax(display_df.head(20)), use_container_width=True, hide_index=True)
 
 with st.expander(f"Show all {len(display_df)} days"):
     st.dataframe(style_tmax(display_df), use_container_width=True, hide_index=True)

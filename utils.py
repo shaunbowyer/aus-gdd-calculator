@@ -26,85 +26,107 @@ LOCATION_NAMES = list(LOCATIONS.keys()) + ["Custom"]
 # ---------------------------------------------------------------------------
 PAGE_CSS = """
 <style>
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@400;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap');
+
 /* ── Layout ── */
 .block-container { padding-top: 1.25rem; }
 
 /* ── Metric cards ── */
 .metric-card {
     background: #ffffff;
-    border-radius: 10px;
-    padding: 1rem 1.25rem 0.9rem;
-    border-left: 5px solid #2e7d32;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border-radius: 16px;
+    padding: 1.1rem 1.3rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-top: 4px solid #166534;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.06);
     height: 100%;
+    transition: box-shadow 0.2s, transform 0.15s;
+    cursor: default;
+}
+.metric-card:hover {
+    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+    transform: translateY(-1px);
 }
 .mc-label {
-    font-size: 0.72rem;
+    font-family: 'Exo', system-ui, sans-serif;
+    font-size: 0.68rem;
     font-weight: 700;
-    color: #777;
+    color: #64748b;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.25rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
 }
 .mc-value {
-    font-size: 1.85rem;
-    font-weight: 800;
-    color: #1b5e20;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #166534;
     line-height: 1.1;
 }
 .mc-sub {
-    font-size: 0.78rem;
-    color: #999;
-    margin-top: 0.2rem;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 0.3rem;
 }
 
 /* ── Warning / note boxes ── */
 .warn-box {
-    background: #fff8e1;
-    border-left: 4px solid #f9a825;
-    border-radius: 6px;
-    padding: 0.65rem 1rem;
-    font-size: 0.88rem;
-    color: #5d4037;
-    margin: 0.5rem 0;
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-left: 4px solid #f59e0b;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #78350f;
+    margin: 0.6rem 0;
 }
 .info-box {
-    background: #e8f5e9;
-    border-left: 4px solid #388e3c;
-    border-radius: 6px;
-    padding: 0.65rem 1rem;
-    font-size: 0.88rem;
-    color: #1b5e20;
-    margin: 0.5rem 0;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-left: 4px solid #16a34a;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #14532d;
+    margin: 0.6rem 0;
 }
 
 /* ── Section headers ── */
 .section-h {
-    font-size: 1.05rem;
+    font-family: 'Exo', system-ui, sans-serif;
+    font-size: 1rem;
     font-weight: 700;
-    color: #2e7d32;
-    border-bottom: 2px solid #e8f5e9;
-    padding-bottom: 0.35rem;
-    margin: 1.4rem 0 0.75rem;
+    color: #166534;
+    border-bottom: 2px solid #dcfce7;
+    padding-bottom: 0.4rem;
+    margin: 1.5rem 0 0.85rem;
+    letter-spacing: 0.02em;
 }
 
 /* ── Page footer ── */
 .page-footer {
     text-align: center;
     font-size: 0.75rem;
-    color: #bbb;
+    color: #94a3b8;
     padding: 1.5rem 0 0.5rem;
     margin-top: 2rem;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid #e2e8f0;
+    font-family: 'Exo', system-ui, sans-serif;
 }
 </style>
 """
 
 FOOTER_HTML = (
     '<div class="page-footer">'
-    "Created by Shaun Bowyer&nbsp;|&nbsp;"
-    '<a href="mailto:shaunbowyeragronomy@gmail.com" style="color:#bbb; text-decoration:none;">'
+    "Created by Shaun Bowyer&nbsp;·&nbsp;"
+    '<a href="mailto:shaunbowyeragronomy@gmail.com" style="color:#94a3b8; text-decoration:none;">'
     "shaunbowyeragronomy@gmail.com</a>"
+    "&nbsp;·&nbsp;Data: "
+    '<a href="https://www.longpaddock.qld.gov.au/silo/" style="color:#94a3b8; text-decoration:none;">SILO</a>'
+    "&nbsp;&amp;&nbsp;"
+    '<a href="https://open-meteo.com/" style="color:#94a3b8; text-decoration:none;">Open-Meteo</a>'
     "</div>"
 )
 

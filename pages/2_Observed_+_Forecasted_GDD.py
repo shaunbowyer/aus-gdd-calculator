@@ -79,7 +79,7 @@ with st.sidebar:
         key="fc_plant",
     )
     preh_date = st.date_input(
-        "Pre-harvest date",
+        "Pre-harvest date (optional)",
         value=None,
         format="YYYY/MM/DD",
         key="fc_preh",
@@ -386,9 +386,9 @@ if obs_x:
             y=obs_y,
             name="Observed (SILO)",
             mode="lines",
-            line=dict(color="#2e7d32", width=2.5),
+            line=dict(color="#166534", width=2.5),
             fill="tozeroy",
-            fillcolor="rgba(46,125,50,0.10)",
+            fillcolor="rgba(22,101,52,0.08)",
             hovertemplate="<b>%{x}</b><br>Cumulative GDD: %{y:.1f} °C-days (observed)<extra></extra>",
         )
     )
@@ -400,7 +400,7 @@ if fc_x:
             y=fc_y,
             name="Forecast (Open-Meteo)",
             mode="lines",
-            line=dict(color="#1565c0", width=2.5, dash="dash"),
+            line=dict(color="#2563eb", width=2.5, dash="dash"),
             hovertemplate="<b>%{x}</b><br>Cumulative GDD: %{y:.1f} °C-days (forecast)<extra></extra>",
         )
     )
@@ -450,30 +450,32 @@ def vline(
 
 # Labels at alternating heights so they never overlap even when dates are close.
 # Planted=top-left, Pre-harvest=bottom-right, Today=bottom-left, Harvest=top-right.
-vline(fig, planting_date, "Planted",     "#1b5e20", "dot",  label_y=0.95, label_xanchor="left")
+vline(fig, planting_date, "Planted",     "#166534", "dot",  label_y=0.95, label_xanchor="left")
 if preh_date:
-    vline(fig, preh_date, "Pre-harvest", "#6a1b9a", "dash", label_y=0.05, label_xanchor="right")
+    vline(fig, preh_date, "Pre-harvest", "#7c3aed", "dash", label_y=0.05, label_xanchor="right")
 if today <= harv_date:
-    vline(fig, today,     "Today",       "#1565c0", "dash", label_y=0.05, label_xanchor="left")
-vline(fig, harv_date,     "Harvest",     "#b71c1c", "dash", label_y=0.95, label_xanchor="right")
+    vline(fig, today,     "Today",       "#2563eb", "dash", label_y=0.05, label_xanchor="left")
+vline(fig, harv_date,     "Harvest",     "#dc2626", "dash", label_y=0.95, label_xanchor="right")
 
 fig.update_layout(
     xaxis_title="Date",
     yaxis_title="Cumulative GDD (°C-days)",
-    plot_bgcolor="white",
+    plot_bgcolor="#fafafa",
     paper_bgcolor="white",
     hovermode="closest",
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
     margin=dict(l=0, r=0, t=50, b=20),
     height=440,
+    font=dict(family="Roboto Mono, monospace", size=12, color="#475569"),
 )
 fig.update_xaxes(
     showgrid=True,
-    gridcolor="#f0f0f0",
+    gridcolor="#e2e8f0",
+    linecolor="#e2e8f0",
     range=[str(planting_date), str(harv_date)],
     showspikes=False,
 )
-fig.update_yaxes(showgrid=True, gridcolor="#f0f0f0")
+fig.update_yaxes(showgrid=True, gridcolor="#e2e8f0", linecolor="#e2e8f0")
 st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
 
 # ── Observed table ────────────────────────────────────────────────────────────
@@ -493,19 +495,25 @@ obs_display = (
 for col in ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days)"]:
     obs_display[col] = obs_display[col].round(1)
 obs_display["Date"] = obs_display["Date"].astype(str)
+obs_display = obs_display.iloc[::-1].reset_index(drop=True)
+
+
+_NUM_COLS = ["Min Temp (°C)", "Max Temp (°C)", "Tmax Eff (°C)", "GDD (°C-days)"]
+_FMT = {col: "{:.1f}" for col in _NUM_COLS}
 
 
 def style_tmax(df):
+    s = df.style.format(_FMT)
     if heat_stress_on:
-        return df.style.map(
-            lambda v: "background-color: #ffcccc;" if v > heat_stress_temp else "",
+        s = s.map(
+            lambda v: "background-color: #ffcccc;" if isinstance(v, (int, float)) and v > heat_stress_temp else "",
             subset=["Max Temp (°C)"],
         )
-    return df.style
+    return s
 
 
-st.markdown(f"**Last 20 days** of {len(obs_display)} total observed days:")
-st.dataframe(style_tmax(obs_display.tail(20)), use_container_width=True, hide_index=True)
+st.markdown(f"**Most recent 20 days** of {len(obs_display)} total observed days:")
+st.dataframe(style_tmax(obs_display.head(20)), use_container_width=True, hide_index=True)
 
 with st.expander(f"Show all {len(obs_display)} observed days"):
     st.dataframe(style_tmax(obs_display), use_container_width=True, hide_index=True)
